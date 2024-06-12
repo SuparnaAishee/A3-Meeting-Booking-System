@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { userValidationSchema } from "../user/user.validation";
+
+const signupValidationSchema = userValidationSchema.extend({
+  password: z.string({ required_error: 'Password is required for signup.' }),
+});
 
 const loginValidationSchema=z.object({
   email: z
@@ -8,5 +13,5 @@ const loginValidationSchema=z.object({
 });
 
 export const AuthValidation={
-    loginValidationSchema,
+    loginValidationSchema,signupValidationSchema
 }

@@ -1,5 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
-import { UserValidation, userValidationSchema } from "./user.validation";
+import {  userValidationSchema } from "./user.validation";
 import { User } from "./user.model";
 import { error } from "console";
 import sendResponse from "../../utils/sendResponse";
@@ -21,7 +21,7 @@ const createUser = catchAsync(async (req, res,next) => {
     } else {
       // Create the user
       const newUser = new User(zodUserData);
-      const createdProduct = await newUser.save();
+      const createdUser = await newUser.save();
 
       sendResponse(res,{
         success:true,
