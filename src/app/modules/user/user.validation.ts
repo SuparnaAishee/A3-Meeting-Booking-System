@@ -15,7 +15,9 @@ export const userValidationSchema = z.object({
   role: z.enum(['admin', 'user']),
 });
 
-export const UserValidation = {
+
+
+export const UserValidations= {
   userValidationSchema,
 };
 
