@@ -1,9 +1,11 @@
-import { Schema, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 import { TUser, UserModel } from "./user.interface";
 import config from "../../config";
 import bycrypt from 'bcrypt';
 
+
 const userSchema=new Schema<TUser,UserModel>(
+    
 {
 name:{type:String,
     required:true,

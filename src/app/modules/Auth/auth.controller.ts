@@ -13,6 +13,7 @@ const signupUser = catchAsync(async (req, res, next) => {
   success: true,
   statusCode: 200,
   message: 'User is Registered Sucessfully',
+  
   data: result,
 });
  
@@ -21,12 +22,21 @@ const signupUser = catchAsync(async (req, res, next) => {
 
 const loginUser = catchAsync(async(req,res)=>
 {
-const result = await AuthServices.loginUser(req.body)
+    const{ token,user}= await AuthServices.loginUser(req.body);
+
 sendResponse(res, {
   success: true,
   statusCode: 200,
   message: 'User is Logged In Sucessfully',
-  data: result,
+  token: token,
+  data: {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    address: user.address,
+  },
 });
 });
 
