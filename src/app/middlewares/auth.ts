@@ -29,7 +29,7 @@ const auth = (...requiredRoles:TUserRole[]) => {
         //check user role
         const role =(decoded as JwtPayload).role
         if (requiredRoles && !requiredRoles.includes(role)){
-        throw new AppError(httpStatus.UNAUTHORIZED, 'Only Admin Can Create Rooms!');
+        throw new AppError(httpStatus.UNAUTHORIZED, 'Only Admin Can Acess This feild!');
         }
           //decoded undefined
 
