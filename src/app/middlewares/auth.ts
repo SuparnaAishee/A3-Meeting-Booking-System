@@ -29,7 +29,10 @@ const auth = (...requiredRoles:TUserRole[]) => {
         //check user role
         const role =(decoded as JwtPayload).role
         if (requiredRoles && !requiredRoles.includes(role)){
-        throw new AppError(httpStatus.UNAUTHORIZED, 'Only Admin Can Acess This feild!');
+        throw new AppError(
+          httpStatus.UNAUTHORIZED,
+          'You have no access to this route',
+        );
         }
           //decoded undefined
 
