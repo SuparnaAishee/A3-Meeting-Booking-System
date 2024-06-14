@@ -12,9 +12,9 @@ export const bookingValidationSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .min(1),
-  totalAmount: z.number().positive('Total amount must be a positive number'),
-  isConfirmed: z.enum(['confirmed', 'unconfirmed', 'canceled']),
-  isDeleted: z.boolean(),
+  totalAmount: z.number().positive('Total amount must be a positive number').optional(),
+  isConfirmed: z.enum(['confirmed', 'unconfirmed', 'canceled']).optional(),
+  isDeleted: z.boolean().optional(),
 });
 
 export const bookingValidations={

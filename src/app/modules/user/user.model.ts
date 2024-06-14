@@ -4,37 +4,33 @@ import config from "../../config";
 import bycrypt from 'bcrypt';
 
 
-const userSchema=new Schema<TUser,UserModel>(
-    
-{
-name:{type:String,
-    required:true,
-},
-email:{
-    type:String,
-    required:true,
-    unique:true,
-},
-password:{
-    type:String,
-    requred:true,
-},
-phone:{
-    type:Number,
-    required:true,
-},
-address:{
-    type:String,
-    required:true,
-},
-role:{
-    type:String,
-    enum:['admin','user'],
-    required:true,
-
-},
-
-}
+const userSchema = new Schema<TUser, UserModel>(
+  {
+    name: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      requred: true,
+    },
+    phone: {
+      type: Number,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'user'],
+      required: true,
+    },
+  },
+  { versionKey: false },
 );
 
 //pre-hook

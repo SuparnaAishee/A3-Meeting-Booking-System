@@ -13,7 +13,12 @@ import { TSlot } from "./slot.interface";
      startTime: { type: String, required: true },
      endTime: { type: String, required: true },
      isBooked: { type: Boolean, required: true, default: false },
+     
    },
    { versionKey: false },
  );
+
+
+
+
 export const Slot = model<TSlot>('Slot', slotSchema);
