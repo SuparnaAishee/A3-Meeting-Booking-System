@@ -5,17 +5,37 @@ import { TRoom } from "./room.interface";
 import { Room } from "./room.model";
 import { Request } from "express";
 import { User } from "../user/user.model";
+import { Types } from "mongoose";
+const createRoomIntoDB = async (payload: TRoom, req: Request) => {
+  
 
-const createRoomIntoDB = async(payload:TRoom,req:Request)=>{
+ 
    
-  const room = await Room.isRoomExistsByID(payload._id);
-  if (room) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Room Already Exists!');
-  }
-  const newRoom = await Room.create(payload);
+    const newRoom = await Room.create(payload);
 
-  return newRoom;
-};
+   
+    const existingRoom = await Room.findOne({
+      name: payload.name,
+      roomNo: payload.roomNo,
+      floorNo: payload.floorNo,
+      capacity: payload.capacity,
+      pricePerSlot: payload.pricePerSlot,
+      amenities: payload.amenities,
+      isDeleted: false,
+    });
+
+   
+    if (existingRoom || (newRoom && newRoom.isDeleted)) {
+     
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Room already exists or is deleted!',
+      );
+    }
+
+  
+    return newRoom;
+  } ;
 
 const getSingleRoomFromDB=async(id:string)=>{
 
@@ -42,7 +62,7 @@ const updateRoomIntoDB=async(id:string,payload:Partial<TRoom>)=>{
   });
   
   if (!updatedRoom) {
-    throw new Error('Room not found');
+    throw new Error('Room not found or deleted');
   }
   
   return updatedRoom;

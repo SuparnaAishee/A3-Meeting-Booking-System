@@ -10,22 +10,22 @@ import { TBooking } from "./booking.interface";
 
 const createBooking = catchAsync(async (req, res, next) => {
   const result = await BookingServices.createBookingFromSlot(req.body);
-  // const response = {
-  //   _id: result._id,
-  //   date: result.date,
-  //   slots: result.slots,
-  //   room: result.room,
-  //   user: result.user,
-  //   totalAmount: result.totalAmount,
-  //   isConfirmed: result.isConfirmed,
-  // };
+  const response = {
+    _id: result._id,
+    date: result.date,
+    slots: result.slots,
+    room: result.room,
+    user: result.user,
+    totalAmount: result.totalAmount,
+    isConfirmed: result.isConfirmed,
+  };
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: 'Booking Created successfully',
 
-    data:result,
+    data:response,
   });
 });
 

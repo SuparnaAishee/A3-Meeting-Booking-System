@@ -81,7 +81,10 @@ const getMyBookingsFromDB= async(payload:TBooking,userId: mongoose.Types.ObjectI
 
   return myBooking;
 };
-const updateSingleBookingFromDB = async (id: string) => {
+const updateSingleBookingFromDB = async (
+  id: string,
+  
+) => {
   const isBookingExist = await Booking.findById(id);
 
   if (!isBookingExist) {

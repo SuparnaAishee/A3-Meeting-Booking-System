@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, ObjectId } from "mongoose";
 
 export type TRoom={
     _id:string;
@@ -12,5 +12,5 @@ export type TRoom={
 };
 export interface RoomModel extends Model<TRoom> {
   // myStaticMethod():number;
-  isRoomExistsByID(_id: string): Promise<TRoom>;
+  isRoomExistsByID(_id:string): Promise<TRoom|null>;
 }

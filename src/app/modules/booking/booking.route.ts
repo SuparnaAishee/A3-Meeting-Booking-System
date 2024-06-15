@@ -6,11 +6,11 @@ import { BookingControllers } from './booking.controller';
 
 const router = express.Router();
 
-router.post('/' ,BookingControllers.createBooking);
+router.post('/' ,auth(USER_ROLE.user),BookingControllers.createBooking);
 router.get('/',auth(USER_ROLE.admin) ,BookingControllers.getAllBookings);
 
 router.put('/:id' ,auth(USER_ROLE.admin),BookingControllers.updateSingleBooking);
-router.delete('/:id' ,BookingControllers.deleteBooking);
+router.delete('/:id' ,auth(USER_ROLE.admin),BookingControllers.deleteBooking);
 
 
 

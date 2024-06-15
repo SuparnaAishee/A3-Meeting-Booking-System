@@ -9,20 +9,33 @@ import { TRoom } from "../room/room.interface";
 
 const createSlotIntoDB = async (payload:TSlot,req: Request) => {
   const { room, date, startTime, endTime, isBooked = false } = payload;
-  // Check if room exists by _id using the static method
- const isroomExists = await Room.findById(room);
+  
+  const isroomExists = await Room.findById(room);
 
- if (!isroomExists) {
-   throw new AppError(httpStatus.NOT_FOUND, 'Room not found !');
- }
+  if (!isroomExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Room not found !');
+  }
 
- const isRoomDeleted = isroomExists?.isDeleted;
- if (isRoomDeleted) {
-   throw new AppError(httpStatus.NOT_FOUND, 'Room is deleted!');
- }
- 
+  const isRoomDeleted = isroomExists?.isDeleted;
+  if (isRoomDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Room is deleted!');
+  }
+  // Check  slots already exist for the given room, date, and time range
+  const existingSlots = await Slot.find({
+    room,
+    date,
+    startTime: { $gte: startTime },
+    endTime: { $lte: endTime },
+  });
 
-  // slot time
+  if (existingSlots.length > 0) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Slots already exist for this time range!',
+    );
+  }
+
+  
   const slotDuration = 60;
   const slots = generateSlots(startTime, endTime, slotDuration);
 
@@ -39,20 +52,34 @@ const createSlotIntoDB = async (payload:TSlot,req: Request) => {
 
   return createdSlots;
 };
+const getAvaiableSlotFromDB = async (query: Record<string, unknown>) => {
+  const { roomId, date } = query;
 
-const getAvaiableSlotFromDB = async(query:Record<string,unknown>)=>{
-const{roomId,date}=query;
-const queryObject: Record<string, unknown> = {};
+ 
+    const queryObject: Record<string, unknown> = {};
+
     if (date && roomId) {
-      query.date = date;
-      query.room = roomId;
+      queryObject.date = date;
+      queryObject.room = roomId;
     }
 
-    const getAvailableSlots = await Slot.find(query).populate('room');
-   
-    return getAvailableSlots;
+    const availableSlots = await Slot.find(queryObject).populate('room');
 
-}
+    // Check conditions for each slot
+    availableSlots.forEach((slot) => {
+      // Check if slot is confirmed
+      if (slot.isBooked) {
+        throw new AppError(
+          400,
+          `Slot ${slot._id} is already confirmed and cannot be booked.`,
+        );
+      }
+      
+    });
+
+    return availableSlots;
+  
+};
 
 export const SlotServices ={
 createSlotIntoDB,getAvaiableSlotFromDB
