@@ -3,9 +3,10 @@ import AppError from '../../errors/AppError';
 
 import { TRoom } from './room.interface';
 import { Room } from './room.model';
-import { Request } from 'express';
+import mongoose from 'mongoose';
 
-const createRoomIntoDB = async (payload: TRoom, req: Request) => {
+
+const createRoomIntoDB = async (payload: TRoom) => {
   
   const existingRoom = await Room.findOne({
     name: payload.name,
@@ -28,13 +29,13 @@ const newRoom = await Room.create(payload);
 return newRoom;
 };
 
-const getSingleRoomFromDB = async (id: string,payload:TRoom) => {
+const getSingleRoomFromDB = async (id: string) => {
   const room = await Room.isRoomExistsByID(id);
   if (!room) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Room is not Exists!');
   }
   const isRoomDeleted = room?.isDeleted;
-  console.log(isRoomDeleted)
+  
   if (isRoomDeleted) {
     throw new AppError(httpStatus.NOT_FOUND, 'Room is deleted!');
   }
@@ -47,18 +48,83 @@ const getAllRoomsFromDB = async (): Promise<TRoom[]> => {
   const rooms = await Room.find().exec();
   return rooms;
 };
-
 const updateRoomIntoDB = async (id: string, payload: Partial<TRoom>) => {
-  const updatedRoom = await Room.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  });
+  const { amenities, ...roomRemainingData } = payload;
 
-  if (!updatedRoom) {
-    throw new Error('Room not found or deleted');
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    //  Update basic room info excluding amenities
+    const updatedBasicRoomInfo = await Room.findByIdAndUpdate(
+      id,
+      roomRemainingData,
+      {
+        new: true,
+        runValidators: true,
+        session,
+      },
+    );
+
+    if (!updatedBasicRoomInfo) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update room');
+    }
+
+  
+    //  amenities array update
+    if (amenities && amenities.length > 0) {
+      const currentRoom = await Room.findById(id).session(session);
+
+      if (!currentRoom) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Room not found');
+      }
+
+      for (const amenity of amenities) {
+        if (currentRoom.amenities.includes(amenity)) {
+          // Remove amenity if it exists
+          await Room.findByIdAndUpdate(
+            id,
+            {
+              $pull: { amenities: amenity },
+            },
+            {
+              new: true,
+              runValidators: true,
+              session,
+            },
+          );
+        } else {
+          // Add amenity if it does not exist
+          await Room.findByIdAndUpdate(
+            id,
+            {
+              $addToSet: { amenities: amenity },
+            },
+            {
+              new: true,
+              runValidators: true,
+              session,
+            },
+          );
+        }
+      }
+    }
+
+    //  Commit the transaction
+    await session.commitTransaction();
+    await session.endSession();
+
+    //  Return the updated room
+    const result = await Room.findById(id).populate('amenities.room');
+
+    return result;
+  } catch (err) {
+    console.error(err);
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update room');
   }
-
-  return updatedRoom;
 };
 
 const deleteRoomFromDB = async (id: string) => {
