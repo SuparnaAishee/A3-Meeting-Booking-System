@@ -8,26 +8,22 @@ export const generateSlots = (
 
   const totalSlotDuration = (end.getTime() - start.getTime()) / (1000 * 60);
 
-  const numberOfSlots = Math.floor( totalSlotDuration / slotDuration);
- 
+  const numberOfSlots = Math.floor(totalSlotDuration / slotDuration);
+
   const slots = [];
-  
+
   for (let i = 0; i < numberOfSlots; i++) {
     const slotStartTime = new Date(start.getTime() + i * slotDuration * 60000);
-    
+
     const slotEndTime = new Date(
       slotStartTime.getTime() + slotDuration * 60000,
     );
-    
-    
-      slots.push({
-        startTime: slotStartTime.toISOString().substring(11, 16),
-        endTime: slotEndTime.toISOString().substring(11, 16),
-      });
-    
-    }
-  
-  
- return slots;
-};
 
+    slots.push({
+      startTime: slotStartTime.toISOString().substring(11, 16),
+      endTime: slotEndTime.toISOString().substring(11, 16),
+    });
+  }
+
+  return slots;
+};

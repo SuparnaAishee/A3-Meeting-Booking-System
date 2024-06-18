@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export type TSlot = {
-  _id:string;
+  _id: string;
   room: mongoose.Schema.Types.ObjectId;
-  date:string;
+  date: string;
   startTime: string;
   endTime: string;
   isBooked?: boolean;
-  isDeleted?:boolean;
+  isDeleted?: boolean;
 };

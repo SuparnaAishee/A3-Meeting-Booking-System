@@ -1,10 +1,8 @@
-import { ObjectId, Schema, model } from "mongoose";
-import { RoomModel, TRoom } from "./room.interface";
-
+import { Schema, model } from 'mongoose';
+import { RoomModel, TRoom } from './room.interface';
 
 const roomSchema = new Schema<TRoom>(
   {
- 
     name: {
       type: String,
       required: true,
@@ -38,8 +36,7 @@ const roomSchema = new Schema<TRoom>(
   { versionKey: false },
 );
 
-roomSchema.statics.isRoomExistsByID = async function (_id:string) {
-  console.log(_id)
-  return await Room.findOne( {_id });
+roomSchema.statics.isRoomExistsByID = async function (_id: string) {
+  return await Room.findOne({ _id });
 };
-export const Room = model<TRoom,RoomModel>('Room', roomSchema);
+export const Room = model<TRoom, RoomModel>('Room', roomSchema);

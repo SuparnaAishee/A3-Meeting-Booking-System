@@ -1,12 +1,11 @@
-import  { Schema, model } from "mongoose";
-import { TBooking } from "./booking.interface";
+import { Schema, model } from 'mongoose';
+import { TBooking } from './booking.interface';
 
 export enum BookingStatus {
- confirmed = 'confirmed',
- unconfirmed = 'unconfirmed',
+  confirmed = 'confirmed',
+  unconfirmed = 'unconfirmed',
   cancelled = 'cancelled',
 }
-
 
 const bookingSchema = new Schema<TBooking>(
   {

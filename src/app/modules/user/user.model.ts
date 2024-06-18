@@ -1,8 +1,7 @@
-import { Model, Schema, model } from "mongoose";
-import { TUser, UserModel } from "./user.interface";
-import config from "../../config";
+import { Schema, model } from 'mongoose';
+import { TUser, UserModel } from './user.interface';
+import config from '../../config';
 import bycrypt from 'bcrypt';
-
 
 const userSchema = new Schema<TUser, UserModel>(
   {
@@ -34,13 +33,13 @@ const userSchema = new Schema<TUser, UserModel>(
 );
 
 //pre-hook
-userSchema.pre('save',async function(next){
-    const user = this;
-    user.password = await bycrypt.hash(
-      user.password,
-      Number(config.bcrypt_salt_rounds),
-    );
-    next();
+userSchema.pre('save', async function (next) {
+  const user = this;
+  user.password = await bycrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
 });
 
 // set '' after saving password
@@ -49,12 +48,15 @@ userSchema.post('save', function (doc, next) {
   next();
 });
 
-userSchema.statics.isUserExistsByEmail= async function(email:string){
-   return  await User.findOne({ email });
+userSchema.statics.isUserExistsByEmail = async function (email: string) {
+  return await User.findOne({ email });
 };
 
-userSchema.statics.isPasswordMatched=async function(plainTextPassword,hashedPassword){
-  return await bycrypt.compare(plainTextPassword,hashedPassword)
-}
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword,
+  hashedPassword,
+) {
+  return await bycrypt.compare(plainTextPassword, hashedPassword);
+};
 
-export const User = model<TUser,UserModel>('User', userSchema);
+export const User = model<TUser, UserModel>('User', userSchema);

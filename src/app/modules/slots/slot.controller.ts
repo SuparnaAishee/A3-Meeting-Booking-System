@@ -1,32 +1,38 @@
-import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
-import { SlotServices } from "./slot.service";
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { SlotServices } from './slot.service';
 
+const createSlot = catchAsync(async (req, res) => {
+  const result = await SlotServices.createSlotIntoDB(req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Slots Created successfully',
 
-const createSlot = catchAsync(async(req,res,next)=>{
-    const result = await SlotServices.createSlotIntoDB(req.body, req);
-    sendResponse(res, {
-      success: true,
-      statusCode: 200,
-      message: 'Slots Created successfully',
-
-      data: result,
-    });
+    data: result,
+  });
 });
 
-const avaiableSlot = catchAsync(async(req,res,next)=>{
-  
-    const result = await SlotServices.getAvaiableSlotFromDB(req.body);
-    
-    sendResponse(res, {
-      success: true,
-      statusCode: 200,
-      message: 'Retrived avaiable slots successfully',
+const avaiableSlot = catchAsync(async (req, res) => {
+  const result = await SlotServices.getAvaiableSlotFromDB(req.query);
 
+  if (result.length === 0) {
+    sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: 'No Data Found',
+      data: [],
+    });
+  } else {
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Available slots retrieved successfully',
       data: result,
     });
+  }
 });
-
-export const slotControllers={
-     createSlot,avaiableSlot
-}
+export const slotControllers = {
+  createSlot,
+  avaiableSlot,
+};

@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
-import { Schema } from "mongoose";
-
+import { Schema } from 'mongoose';
 
 export type TBooking = {
   room: Schema.Types.ObjectId;

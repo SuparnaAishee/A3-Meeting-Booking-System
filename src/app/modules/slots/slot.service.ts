@@ -1,15 +1,19 @@
-import { Request } from "express";
-import { TSlot } from "./slot.interface";
-import { Slot } from "./slot.model";
-import { generateSlots } from "./slot.constant";
-import { Room } from "../room/room.model";
-import AppError from "../../errors/AppError";
-import httpStatus from "http-status";
-import { TRoom } from "../room/room.interface";
 
-const createSlotIntoDB = async (payload:TSlot,req: Request) => {
+import { TSlot } from './slot.interface';
+import { Slot } from './slot.model';
+import { generateSlots } from './slot.constant';
+import { Room } from '../room/room.model';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
+
+
+
+
+
+
+const createSlotIntoDB = async (payload: TSlot) => {
   const { room, date, startTime, endTime, isBooked = false } = payload;
-  
+
   const isroomExists = await Room.findById(room);
 
   if (!isroomExists) {
@@ -31,11 +35,10 @@ const createSlotIntoDB = async (payload:TSlot,req: Request) => {
   if (existingSlots.length > 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      'Slots already exist for this time range!',
+      'Slots already exist in this room for the given  time range!',
     );
   }
 
-  
   const slotDuration = 60;
   const slots = generateSlots(startTime, endTime, slotDuration);
 
@@ -53,34 +56,26 @@ const createSlotIntoDB = async (payload:TSlot,req: Request) => {
   return createdSlots;
 };
 const getAvaiableSlotFromDB = async (query: Record<string, unknown>) => {
-  const { roomId, date } = query;
+  const { roomId, date } = query 
 
- 
-    const queryObject: Record<string, unknown> = {};
+  const queryObject: Record<string, unknown> = {};
 
-    if (date && roomId) {
-      queryObject.date = date;
-      queryObject.room = roomId;
-    }
-
-    const availableSlots = await Slot.find(queryObject).populate('room');
-
-    // Check conditions for each slot
-    availableSlots.forEach((slot) => {
-      // Check if slot is confirmed
-      if (slot.isBooked) {
-        throw new AppError(
-          400,
-          `Slot ${slot._id} is already confirmed and cannot be booked.`,
-        );
-      }
-      
-    });
-
-    return availableSlots;
+  if (date) {
+    queryObject.date = date;
+  }
   
+  if (roomId) {
+    queryObject.room = roomId;
+  }
+  const availableSlots = await Slot.find(queryObject).populate('room');
+  
+  // Filter out slots that are booked
+
+  const filteredSlots = availableSlots.filter((slot) => !slot.isBooked);
+  return filteredSlots;
 };
 
-export const SlotServices ={
-createSlotIntoDB,getAvaiableSlotFromDB
-}
+export const SlotServices = {
+  createSlotIntoDB,
+  getAvaiableSlotFromDB,
+};

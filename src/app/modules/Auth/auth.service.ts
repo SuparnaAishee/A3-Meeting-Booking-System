@@ -1,18 +1,14 @@
-import httpStatus from "http-status";
-import AppError from "../../errors/AppError";
-import { User } from "../user/user.model";
-import { TLoginUser } from "./auth.interface";
-import bcrypt from "bcrypt";
-import { TUser } from "../user/user.interface";
-import sendResponse from "../../utils/sendResponse";
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
-import config from "../../config";
+import httpStatus from 'http-status';
+import AppError from '../../errors/AppError';
+import { User } from '../user/user.model';
+import { TLoginUser } from './auth.interface';
 
+import { TUser } from '../user/user.interface';
 
+import jwt from 'jsonwebtoken';
+import config from '../../config';
 
-
-
-const signupUser=async(payload:TUser)=>{
+const signupUser = async (payload: TUser) => {
   //checking if user is exist
   const user = await User.isUserExistsByEmail(payload.email);
   if (user) {
@@ -21,13 +17,12 @@ const signupUser=async(payload:TUser)=>{
 
   // Create new user
   const newUser = await User.create(payload);
- 
+
   // Return the newly created user
-  return  newUser;
+  return newUser;
 };
 
-
-const loginUser = async(payload:TLoginUser)=>{
+const loginUser = async (payload: TLoginUser) => {
   const user = await User.isUserExistsByEmail(payload.email);
 
   if (!user) {
@@ -46,14 +41,12 @@ const loginUser = async(payload:TLoginUser)=>{
   const token = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
     expiresIn: '30d',
   });
-  
+
   // Return token and user data
   return { token, user };
 };
 
-
-
-
-export const AuthServices={
-    loginUser,signupUser
-}
+export const AuthServices = {
+  loginUser,
+  signupUser,
+};

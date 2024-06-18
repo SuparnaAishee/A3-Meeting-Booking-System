@@ -1,14 +1,12 @@
-import httpStatus from "http-status";
-import AppError from "../../errors/AppError";
-import { Slot } from "../slots/slot.model";
-import { TBooking } from "./booking.interface";
-import { Booking, BookingStatus } from "./booking.model";
-import { Room } from "../room/room.model";
-import { User } from "../user/user.model";
-import mongoose, { Document } from 'mongoose';
-const createBookingFromSlot = async (
-  payload: TBooking,
-) => {
+import httpStatus from 'http-status';
+import AppError from '../../errors/AppError';
+import { Slot } from '../slots/slot.model';
+import { TBooking } from './booking.interface';
+import { Booking } from './booking.model';
+import { Room } from '../room/room.model';
+import { User } from '../user/user.model';
+import mongoose from 'mongoose';
+const createBookingFromSlot = async (payload: TBooking) => {
   const { room, slots, user, date } = payload;
 
   // Checking date exists in any slot
@@ -21,7 +19,9 @@ const createBookingFromSlot = async (
   }
 
   // Validate each slot
-  for (const slotId of slots) {
+  for (const slotId of slots)
+   
+  {
     const slot = await Slot.findById(slotId);
     if (!slot || slot.isDeleted || slot.isBooked) {
       throw new Error(`Slot ${slotId} is not available`);
@@ -32,6 +32,21 @@ const createBookingFromSlot = async (
   const roomInfo = await Room.findById(room);
   if (!roomInfo || roomInfo.isDeleted) {
     throw new Error('Room not found or is deleted');
+  }
+
+  // Checking if the room is already booked for the given date
+  const isRoomAlreadyBooked = await Slot.findOne({
+    room: room,
+    date: date,
+    slots:slots,
+    isBooked: true,
+  });
+  
+  if (isRoomAlreadyBooked) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Room is already booked for the given date',
+    );
   }
 
   // Checking if the user exists
@@ -60,20 +75,24 @@ const createBookingFromSlot = async (
     .populate('room')
     .populate('slots')
     .populate('user');
+
   return booking;
 };
 
-const getAllBookingsFromDB=async()=>{
- const allBooking = await Booking.find()
-   .populate('room')
-   .populate('slots')
-   .populate('user');
- return allBooking;
+const getAllBookingsFromDB = async () => {
+  const allBooking = await Booking.find()
+    .populate('room')
+    .populate('slots')
+    .populate('user');
+  return allBooking;
 };
 
-const getMyBookingsFromDB= async(payload:TBooking,userId: mongoose.Types.ObjectId)=>{
- const myBooking = await Booking.find({user:userId})
-  
+const getMyBookingsFromDB = async (
+  payload: TBooking,
+  userId: mongoose.Types.ObjectId,
+) => {
+  const myBooking = await Booking.find({ user: userId })
+
     .populate('room')
     .populate('slots')
     .populate('user')
@@ -81,10 +100,7 @@ const getMyBookingsFromDB= async(payload:TBooking,userId: mongoose.Types.ObjectI
 
   return myBooking;
 };
-const updateSingleBookingFromDB = async (
-  id: string,
-  
-) => {
+const updateSingleBookingFromDB = async (id: string) => {
   const isBookingExist = await Booking.findById(id);
 
   if (!isBookingExist) {
@@ -109,11 +125,10 @@ const updateSingleBookingFromDB = async (
   return result;
 };
 
-
 const deleteBookingFromDB = async (id: string) => {
   const result = await Booking.findByIdAndUpdate(
     id,
-   
+
     { isDeleted: true },
     {
       new: true,
@@ -123,8 +138,10 @@ const deleteBookingFromDB = async (id: string) => {
   return result;
 };
 
-
 export const BookingServices = {
   createBookingFromSlot,
- getAllBookingsFromDB,getMyBookingsFromDB,updateSingleBookingFromDB,deleteBookingFromDB
+  getAllBookingsFromDB,
+  getMyBookingsFromDB,
+  updateSingleBookingFromDB,
+  deleteBookingFromDB,
 };

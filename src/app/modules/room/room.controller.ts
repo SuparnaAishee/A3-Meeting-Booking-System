@@ -1,8 +1,8 @@
-import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
-import { RoomServices } from "./room.service";
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { RoomServices } from './room.service';
 
-const createRoom = catchAsync(async (req, res, next) => {
+const createRoom = catchAsync(async (req, res) => {
   const result = await RoomServices.createRoomIntoDB(req.body,req);
   sendResponse(res, {
     success: true,
@@ -13,53 +13,55 @@ const createRoom = catchAsync(async (req, res, next) => {
   });
 });
 
-const getSingleRoom = catchAsync(async(req,res,next)=>{
-    const {id}=req.params;
-   const result = await RoomServices.getSingleRoomFromDB(id);
-   sendResponse(res, {
-     success: true,
-     statusCode: 200,
-     message: 'Room retrieved successfully',
+const getSingleRoom = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await RoomServices.getSingleRoomFromDB(id,req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Room retrieved successfully',
 
-     data: result,
-   });
+    data: result,
+  });
 });
 
-const getAllRooms = catchAsync(async(req,res)=>{
-    const result = await RoomServices.getAllRoomsFromDB();
-    sendResponse(res, {
-      success: true,
-      statusCode: 200,
-      message: 'Room retrieved successfully',
+const getAllRooms = catchAsync(async (req, res) => {
+  const result = await RoomServices.getAllRoomsFromDB();
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Room retrieved successfully',
 
-      data: result,
-    });
+    data: result,
+  });
 });
 
-const updateRoom = catchAsync(async(req,res)=>{
-    const {id}=req.params;
-    const result = await RoomServices.updateRoomIntoDB(id,req.body);
-     sendResponse(res, {
-       success: true,
-       statusCode: 200,
-       message: 'Room updated successfully',
-       data: result,
-     });
-
+const updateRoom = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await RoomServices.updateRoomIntoDB(id, req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Room updated successfully',
+    data: result,
+  });
 });
 
-const deleteRoom = catchAsync(async(req,res)=>{
-  const{id}=req.params;
+const deleteRoom = catchAsync(async (req, res) => {
+  const { id } = req.params;
   const result = await RoomServices.deleteRoomFromDB(id);
-   sendResponse(res, {
-     success: true,
-     statusCode: 200,
-     message: 'Room Deleted successfully',
-     data: result,
-   });
-})
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Room Deleted successfully',
+    data: result,
+  });
+});
 
-
-export const RoomControllers={
-    createRoom,getSingleRoom,getAllRooms,updateRoom,deleteRoom
-}
+export const RoomControllers = {
+  createRoom,
+  getSingleRoom,
+  getAllRooms,
+  updateRoom,
+  deleteRoom,
+};
