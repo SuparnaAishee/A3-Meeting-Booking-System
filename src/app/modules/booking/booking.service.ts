@@ -2,15 +2,23 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { Slot } from '../slots/slot.model';
 import { TBooking } from './booking.interface';
-import { Booking } from './booking.model';
+import { Booking, BookingStatus } from './booking.model';
 import { Room } from '../room/room.model';
 import { User } from '../user/user.model';
-import mongoose from 'mongoose';
+
+import { JwtPayload } from 'jsonwebtoken';
+import { ObjectId } from 'mongoose';
+
+
+
+
+
 const createBookingFromSlot = async (payload: TBooking) => {
   const { room, slots, user, date } = payload;
 
   // Checking date exists in any slot
-  const isDateExists = await Slot.exists({ date });
+  const isDateExists = await Slot.exists({ date,room });
+ 
   if (!isDateExists) {
     throw new AppError(
       httpStatus.NOT_FOUND,
@@ -52,7 +60,7 @@ const createBookingFromSlot = async (payload: TBooking) => {
   // Checking if the user exists
   const userInfo = await User.findById(user);
   if (!userInfo) {
-    throw new Error('User not found');
+    throw new Error('User  not found');
   }
 
   //  slot array can not empty
@@ -87,20 +95,50 @@ const getAllBookingsFromDB = async () => {
   return allBooking;
 };
 
-const getMyBookingsFromDB = async (
-  payload: TBooking,
-  userId: mongoose.Types.ObjectId,
-) => {
-  const myBooking = await Booking.find({ user: userId })
+const getMyBookingsFromDB = async(payload:JwtPayload) => {
+  try {
+   
+    if (!payload || typeof payload !== 'object' || !payload.userEmail) {
+     
+      throw new AppError(httpStatus.BAD_REQUEST, 'Invalid token payload');
+    }
 
-    .populate('room')
-    .populate('slots')
-    .populate('user')
-    .exec();
+   
 
-  return myBooking;
+    const userExist = await User.findOne({ email: payload.userEmail });
+   
+
+    if (!userExist) {
+      throw new AppError(httpStatus.NOT_FOUND, 'No Bookings Found for this user ');
+    }
+
+    const bookings = await Booking.find({ user: userExist._id })
+      .populate('room')
+      .populate({
+        path: 'slots',
+        select: '-__v', // You can exclude other fields as needed
+      })
+      .select('-user -__v')
+      .exec();
+
+
+    if (!bookings || bookings.length === 0) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        'No bookings found for this user',
+      );
+    }
+
+   
+    return bookings;
+  } catch (error) {
+  
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'An error occurred while fetching bookings');
+  }
 };
-const updateSingleBookingFromDB = async (id: string) => {
+const updateSingleBookingFromDB = async (id: string)=> {
+ 
+
   const isBookingExist = await Booking.findById(id);
 
   if (!isBookingExist) {
@@ -114,18 +152,45 @@ const updateSingleBookingFromDB = async (id: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'Booking is already deleted');
   }
 
+  
   const result = await Booking.findByIdAndUpdate(
     id,
-    { isConfirmed: 'confirmed' },
+    
+    { isConfirmed:BookingStatus.confirmed},
     {
       new: true,
       runValidators: true,
     },
   );
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+  }
+  // Update slots to set isBooked to true
+  if (result.isConfirmed === BookingStatus.confirmed) {
+    await Promise.all(
+      result.slots.map(async (slotId: ObjectId) => {
+        // Use ObjectId here
+        await Slot.findByIdAndUpdate(slotId, { isBooked: true }, { new: true });
+      }),
+    );
+  
+  
+
+  }
+ 
   return result;
 };
 
 const deleteBookingFromDB = async (id: string) => {
+  const isBookingExist = await Booking.findById(id);
+
+  if (!isBookingExist) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+  }
+if (isBookingExist.isDeleted) {
+  throw new AppError(httpStatus.BAD_REQUEST, 'Booking is already deleted');
+}
+
   const result = await Booking.findByIdAndUpdate(
     id,
 

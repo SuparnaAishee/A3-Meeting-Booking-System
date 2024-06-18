@@ -55,6 +55,8 @@ const createSlotIntoDB = async (payload: TSlot) => {
 
   return createdSlots;
 };
+
+
 const getAvaiableSlotFromDB = async (query: Record<string, unknown>) => {
   const { roomId, date } = query 
 

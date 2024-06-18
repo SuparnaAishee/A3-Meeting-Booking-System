@@ -18,6 +18,7 @@ const userSchema = new Schema<TUser, UserModel>(
     phone: {
       type: Number,
       required: true,
+     
     },
     address: {
       type: String,
@@ -34,6 +35,7 @@ const userSchema = new Schema<TUser, UserModel>(
 
 //pre-hook
 userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
   user.password = await bycrypt.hash(
     user.password,

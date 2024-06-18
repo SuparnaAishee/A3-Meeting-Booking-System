@@ -4,6 +4,7 @@ import { SlotServices } from './slot.service';
 
 const createSlot = catchAsync(async (req, res) => {
   const result = await SlotServices.createSlotIntoDB(req.body);
+
   sendResponse(res, {
     success: true,
     statusCode: 200,

@@ -128,6 +128,12 @@ const updateRoomIntoDB = async (id: string, payload: Partial<TRoom>) => {
 };
 
 const deleteRoomFromDB = async (id: string) => {
+   const isRoomExist = await Room.findById(id);
+
+   if (!isRoomExist) {
+     throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
+   }
+   
   const result = await Room.findByIdAndUpdate(
     id,
     { isDeleted: true },
@@ -135,6 +141,10 @@ const deleteRoomFromDB = async (id: string) => {
       new: true,
     },
   );
+   
+  if (!result || result.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Room is  already Deleted');
+  }
   return result;
 };
 

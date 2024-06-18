@@ -1,4 +1,6 @@
-import { Schema } from 'mongoose';
+import  { Schema } from 'mongoose';
+import { BookingStatus } from './booking.model';
+// import { BookingStatus } from './booking.model';
 
 export type TBooking = {
   room: Schema.Types.ObjectId;
@@ -6,6 +8,7 @@ export type TBooking = {
   user: Schema.Types.ObjectId;
   date: string;
   totalAmount: number;
-  isConfirmed: 'confirmed' | 'unconfirmed' | 'canceled';
+  isConfirmed:BookingStatus;
   isDeleted: boolean;
+ 
 };

@@ -5,12 +5,20 @@ import { AuthServices } from './auth.service';
 
 const signupUser = catchAsync(async (req, res) => {
   const result = await AuthServices.signupUser(req.body);
+  const orderedResult = {
+    _id: result._id,
+    name: result.name,
+    email: result.email,
+    phone: result.phone,
+    role: result.role,
+    address: result.address,
+  };
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: 'User is Registered Sucessfully',
 
-    data: result,
+    data: orderedResult,
   });
 });
 

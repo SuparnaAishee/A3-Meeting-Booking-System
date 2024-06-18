@@ -3,19 +3,29 @@ import sendResponse from '../../utils/sendResponse';
 import { RoomServices } from './room.service';
 
 const createRoom = catchAsync(async (req, res) => {
-  const result = await RoomServices.createRoomIntoDB(req.body,req);
+  const result = await RoomServices.createRoomIntoDB(req.body);
+  const orderedResult = {
+    _id:result._id,
+name:result.name,
+roomNo:result.roomNo,
+floorNo:result.floorNo,
+capacity:result.capacity,
+pricePerSlot:result.pricePerSlot,
+amenities:result.amenities,
+isDeleted:result.isDeleted
+  }
   sendResponse(res, {
     success: true,
     statusCode: 200,
     message: 'Room added successfully',
 
-    data: result,
+    data:orderedResult,
   });
 });
 
 const getSingleRoom = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await RoomServices.getSingleRoomFromDB(id,req.body);
+  const result = await RoomServices.getSingleRoomFromDB(id);
   sendResponse(res, {
     success: true,
     statusCode: 200,
