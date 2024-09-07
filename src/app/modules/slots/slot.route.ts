@@ -8,12 +8,14 @@ import { USER_ROLE } from '../user/user.constant';
 const router = express.Router();
 
 router.post('/', auth(USER_ROLE.admin), slotControllers.createSlot);
-router.get('/',slotControllers.getAllSlot );
+router.get('/',auth(USER_ROLE.admin),slotControllers.getAllSlot );
 
 router.get(
-  '/availability',
+  '/availability',auth(USER_ROLE.admin, USER_ROLE.user),
  
   slotControllers.avaiableSlot,
-);// auth(USER_ROLE.admin, USER_ROLE.user),
+);
+router.put('/:id',slotControllers.updateSingleslot);
 
+router.delete('/:id',slotControllers.deleteSingleSlot)
 export const SlotRouters = router;

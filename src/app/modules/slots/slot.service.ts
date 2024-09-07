@@ -62,6 +62,7 @@ const getAllSlotFromDB = async () => {
   const result = Slot.find();
   return result;
 };
+
 const getAvaiableSlotFromDB = async (query: Record<string, unknown>) => {
   const { roomId, date } = query 
 const queryObject: Record<string, unknown> = {};
@@ -85,7 +86,65 @@ if (date) {
 
 };
 
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const updateSingleSlotFromDB = async (id: string, payload: any) => {
+  // Check if the slot exists
+  const isSlotExist = await Slot.findById(id);
+ 
+  if (!isSlotExist) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+
+  // Check if the slot is already booked
+  if (isSlotExist?.isBooked === true) {
+    throw new AppError(httpStatus.CONFLICT, 'Slot already booked');
+  }
+
+  const isRoomExists = await Room.findById(payload?.room);
+
+  if (!isRoomExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
+  }
+
+  const result = await Slot.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
+const deleteSingleSlotFromDB = async (id: string) => {
+  //  slot exists
+  const isSlotExist = await Slot.findById(id);
+
+  if (!isSlotExist) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+
+  // slot is already booked
+  if (isSlotExist?.isBooked) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "Slot already booked, can't delete",
+    );
+  }
+
+  const result = await Slot.findByIdAndDelete(id);
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to delete slot',
+    );
+  }
+
+  return result;
+};
+
+
 export const SlotServices = {
   createSlotIntoDB,
-  getAvaiableSlotFromDB,getAllSlotFromDB
+  getAvaiableSlotFromDB,getAllSlotFromDB,updateSingleSlotFromDB,deleteSingleSlotFromDB
 };
