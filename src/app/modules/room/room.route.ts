@@ -18,7 +18,7 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.user),
   RoomControllers.getSingleRoom,
 );
-router.get('/',  RoomControllers.getAllRooms);//auth(USER_ROLE.admin,USER_ROLE.user),
+router.get('/', auth(USER_ROLE.admin,USER_ROLE.user), RoomControllers.getAllRooms);
 // router.put('/:id', auth(USER_ROLE.admin), RoomControllers.updateRoom);
 router.put(
   '/:id',

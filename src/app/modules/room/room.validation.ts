@@ -51,9 +51,9 @@ export const roomValidationSchema = z.object({
     .array(z.string())
     .nonempty({ message: 'There must be at least one amenity' }),
   image: z
-    .string()
-    .url({ message: 'Image must be a valid URL' }) 
-    .min(1, { message: 'Image URL is required' }),
+    .array(z.string().url('Each image must be a valid URL'))
+    .min(2, 'At least two image is required'),
+
   isDeleted: z.boolean().default(false),
 });
 

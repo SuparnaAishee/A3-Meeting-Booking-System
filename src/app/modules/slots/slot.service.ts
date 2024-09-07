@@ -58,7 +58,10 @@ const createSlotIntoDB = async (payload: TSlot) => {
   return createdSlots;
 };
 
-
+const getAllSlotFromDB = async () => {
+  const result = Slot.find();
+  return result;
+};
 const getAvaiableSlotFromDB = async (query: Record<string, unknown>) => {
   const { roomId, date } = query 
 const queryObject: Record<string, unknown> = {};
@@ -84,5 +87,5 @@ if (date) {
 
 export const SlotServices = {
   createSlotIntoDB,
-  getAvaiableSlotFromDB,
+  getAvaiableSlotFromDB,getAllSlotFromDB
 };

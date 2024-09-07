@@ -33,7 +33,7 @@ const roomSchema = new Schema<TRoom>(
       default: false,
     },
     image: {
-      type: String, 
+      type:[ String], 
       required: true, 
     },
   },
