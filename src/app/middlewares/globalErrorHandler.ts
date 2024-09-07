@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import config from '../config';
 import AppError from '../errors/AppError';
 import { TErrorSources } from '../interface/errors';
@@ -9,10 +9,11 @@ import handleCastError from '../errors/handleCastErrors';
 import handleDuplicateError from '../errors/handleDuplicateErrors';
 
 const globalErrorHandler = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,
   req: Request,
   res: Response,
-  next: NextFunction,
+ 
 ) => {
   let statusCode = 500;
   let message = 'Something went wrong!';

@@ -18,7 +18,7 @@ const slot_constant_1 = require("./slot.constant");
 const room_model_1 = require("../room/room.model");
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
-const createSlotIntoDB = (payload, req) => __awaiter(void 0, void 0, void 0, function* () {
+const createSlotIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { room, date, startTime, endTime, isBooked = false } = payload;
     const isroomExists = yield room_model_1.Room.findById(room);
     if (!isroomExists) {
@@ -36,7 +36,7 @@ const createSlotIntoDB = (payload, req) => __awaiter(void 0, void 0, void 0, fun
         endTime: { $lte: endTime },
     });
     if (existingSlots.length > 0) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Slots already exist for this time range!');
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Slots already exist in this room for the given  time range!');
     }
     const slotDuration = 60;
     const slots = (0, slot_constant_1.generateSlots)(startTime, endTime, slotDuration);
@@ -54,19 +54,18 @@ const createSlotIntoDB = (payload, req) => __awaiter(void 0, void 0, void 0, fun
 const getAvaiableSlotFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const { roomId, date } = query;
     const queryObject = {};
-    if (date && roomId) {
-        queryObject.date = date;
+    if (roomId) {
         queryObject.room = roomId;
     }
-    const availableSlots = yield slot_model_1.Slot.find(queryObject).populate('room');
-    // Check conditions for each slot
-    availableSlots.forEach((slot) => {
-        // Check if slot is confirmed
-        if (slot.isBooked) {
-            throw new AppError_1.default(400, `Slot ${slot._id} is already confirmed and cannot be booked.`);
-        }
-    });
-    return availableSlots;
+    if (date) {
+        queryObject.date = date;
+    }
+    const availableSlots = yield slot_model_1.Slot.find(queryObject)
+        .populate({ path: 'room', model: 'Room' })
+        .exec();
+    // Filter out slots that are booked
+    const filteredSlots = availableSlots.filter((slot) => !slot.isBooked);
+    return filteredSlots;
 });
 exports.SlotServices = {
     createSlotIntoDB,

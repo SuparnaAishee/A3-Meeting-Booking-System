@@ -14,12 +14,12 @@ exports.slotValidationSchema = zod_1.z
         .string()
         .regex(/^\d{2}:\d{2}$/, {
         message: 'Invalid start time format, should be HH:MM',
-    }),
+    }).nonempty('Start Time have to be given'),
     endTime: zod_1.z
         .string()
         .regex(/^\d{2}:\d{2}$/, {
         message: 'Invalid end time format, should be HH:MM',
-    }),
+    }).nonempty('End Time have to be given'),
     isBooked: zod_1.z.boolean().optional(),
 })
     .refine((data) => {

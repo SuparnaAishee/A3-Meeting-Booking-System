@@ -1,8 +1,10 @@
-import mongoose from 'mongoose';
+import { Types } from "mongoose";
+import { TRoom } from "../room/room.interface";
+
 
 export type TSlot = {
   _id: string;
-  room: mongoose.Schema.Types.ObjectId;
+  room: Types.ObjectId|TRoom;
   date: string;
   startTime: string;
   endTime: string;

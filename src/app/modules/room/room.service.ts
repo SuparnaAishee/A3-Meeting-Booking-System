@@ -5,7 +5,19 @@ import { TRoom } from './room.interface';
 import { Room } from './room.model';
 import mongoose from 'mongoose';
 
+interface PaginatedRooms {
+  rooms: TRoom[];
+  totalRooms: number;
+  totalPages: number;
+  currentPage: number;
+}
 
+// export interface QueryParams {
+//   search?: string;
+//   page?:number;
+//   limit?: number;
+//   sort?: string;
+// }
 const createRoomIntoDB = async (payload: TRoom) => {
   
   const existingRoom = await Room.findOne({
@@ -44,10 +56,29 @@ const getSingleRoomFromDB = async (id: string) => {
   return result;
 };
 
-const getAllRoomsFromDB = async (): Promise<TRoom[]> => {
-  const rooms = await Room.find().exec();
-  return rooms;
+// 
+const getAllRoomsFromDB = async (
+  page: number,
+  limit: number,
+): Promise<PaginatedRooms> => {
+  const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+  // Fetch the rooms with pagination
+  const rooms = await Room.find().skip(skip).limit(limit).exec();
+
+  // Get the total count of rooms
+  const totalRooms = await Room.countDocuments();
+
+  const totalPages = Math.ceil(totalRooms / limit); // Calculate total number of pages
+
+  return {
+    rooms, // Paginated list of rooms
+    totalRooms, // Total count of rooms
+    totalPages, // Total number of pages
+    currentPage: page, // Current page number
+  };
 };
+
 const updateRoomIntoDB = async (id: string, payload: Partial<TRoom>) => {
   const { amenities, ...roomRemainingData } = payload;
 
@@ -133,7 +164,10 @@ const deleteRoomFromDB = async (id: string) => {
    if (!isRoomExist) {
      throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
    }
-   
+    
+  if (!isRoomExist || isRoomExist.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Room is  already Deleted');
+  }
   const result = await Room.findByIdAndUpdate(
     id,
     { isDeleted: true },
@@ -141,10 +175,7 @@ const deleteRoomFromDB = async (id: string) => {
       new: true,
     },
   );
-   
-  if (!result || result.isDeleted) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Room is  already Deleted');
-  }
+  
   return result;
 };
 

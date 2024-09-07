@@ -12,9 +12,9 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 //app.use(cors())
 app.use('/api', routes_1.default);
-app.use(globalErrorHandler_1.default);
-app.use(notFound_1.default);
 app.get('/', (req, res) => {
     res.send('Book Your Meeting Room');
 });
+app.use(globalErrorHandler_1.default);
+app.use(notFound_1.default);
 exports.default = app;

@@ -32,6 +32,10 @@ const roomSchema = new Schema<TRoom>(
       required: true,
       default: false,
     },
+    image: {
+      type: String, 
+      required: true, 
+    },
   },
   { versionKey: false },
 );

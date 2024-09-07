@@ -1,10 +1,10 @@
-import mongoose, {  Schema, model } from 'mongoose';
+import  {  Schema, model } from 'mongoose';
 import { TSlot } from './slot.interface';
 
 const slotSchema = new Schema<TSlot>(
   {
     room: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Room',
       required: true,
     },

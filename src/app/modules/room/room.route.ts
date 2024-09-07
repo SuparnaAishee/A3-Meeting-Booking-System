@@ -1,6 +1,6 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import { roomValidationSchema } from './room.validation';
+import { roomValidationSchema, updateRoomValidationSchema } from './room.validation';
 import { RoomControllers } from './room.controller';
 import auth from '../../middlewares/auth';
 import { USER_ROLE } from '../user/user.constant';
@@ -18,8 +18,15 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.user),
   RoomControllers.getSingleRoom,
 );
-router.get('/', auth(USER_ROLE.admin,USER_ROLE.user), RoomControllers.getAllRooms);
-router.put('/:id', auth(USER_ROLE.admin), RoomControllers.updateRoom);
+router.get('/',  RoomControllers.getAllRooms);//auth(USER_ROLE.admin,USER_ROLE.user),
+// router.put('/:id', auth(USER_ROLE.admin), RoomControllers.updateRoom);
+router.put(
+  '/:id',
+  auth(USER_ROLE.admin),
+  validateRequest(updateRoomValidationSchema), 
+  RoomControllers.updateRoom,
+);
+
 router.delete('/:id', auth(USER_ROLE.admin), RoomControllers.deleteRoom);
 
 export const RoomRoutes = router;

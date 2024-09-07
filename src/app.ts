@@ -11,11 +11,12 @@ app.use(express.json());
 
 app.use('/api', router);
 
-app.use(globalErrorHandler);
-app.use(notFound);
+
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Book Your Meeting Room');
 });
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;

@@ -10,7 +10,9 @@ const handleZodErrors_1 = __importDefault(require("../errors/handleZodErrors"));
 const handleValidationErrors_1 = __importDefault(require("../errors/handleValidationErrors"));
 const handleCastErrors_1 = __importDefault(require("../errors/handleCastErrors"));
 const handleDuplicateErrors_1 = __importDefault(require("../errors/handleDuplicateErrors"));
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+err, req, res) => {
     let statusCode = 500;
     let message = 'Something went wrong!';
     let errorSources = [

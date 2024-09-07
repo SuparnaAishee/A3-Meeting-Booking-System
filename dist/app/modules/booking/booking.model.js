@@ -6,7 +6,7 @@ var BookingStatus;
 (function (BookingStatus) {
     BookingStatus["confirmed"] = "confirmed";
     BookingStatus["unconfirmed"] = "unconfirmed";
-    BookingStatus["cancelled"] = "cancelled";
+    BookingStatus["canceled"] = "canceled";
 })(BookingStatus || (exports.BookingStatus = BookingStatus = {}));
 const bookingSchema = new mongoose_1.Schema({
     slots: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Slot', required: true }],

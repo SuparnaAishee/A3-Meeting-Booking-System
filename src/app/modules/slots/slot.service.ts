@@ -11,6 +11,8 @@ import httpStatus from 'http-status';
 
 
 
+
+
 const createSlotIntoDB = async (payload: TSlot) => {
   const { room, date, startTime, endTime, isBooked = false } = payload;
 
@@ -59,22 +61,25 @@ const createSlotIntoDB = async (payload: TSlot) => {
 
 const getAvaiableSlotFromDB = async (query: Record<string, unknown>) => {
   const { roomId, date } = query 
-
-  const queryObject: Record<string, unknown> = {};
-
-  if (date) {
-    queryObject.date = date;
-  }
+const queryObject: Record<string, unknown> = {};
+if (roomId) {
+  queryObject.room = roomId;
+}
+if (date) {
+  queryObject.date = date;
+}
   
-  if (roomId) {
-    queryObject.room = roomId;
-  }
-  const availableSlots = await Slot.find(queryObject).populate('room');
+ const availableSlots = await Slot.find(queryObject)
+   .populate({ path: 'room', model: 'Room' })
+   .exec();
+
   
   // Filter out slots that are booked
 
   const filteredSlots = availableSlots.filter((slot) => !slot.isBooked);
+  
   return filteredSlots;
+
 };
 
 export const SlotServices = {

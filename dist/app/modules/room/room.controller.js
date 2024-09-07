@@ -17,12 +17,22 @@ const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const room_service_1 = require("./room.service");
 const createRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield room_service_1.RoomServices.createRoomIntoDB(req.body, req);
+    const result = yield room_service_1.RoomServices.createRoomIntoDB(req.body);
+    const orderedResult = {
+        _id: result._id,
+        name: result.name,
+        roomNo: result.roomNo,
+        floorNo: result.floorNo,
+        capacity: result.capacity,
+        pricePerSlot: result.pricePerSlot,
+        amenities: result.amenities,
+        isDeleted: result.isDeleted
+    };
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,
         message: 'Room added successfully',
-        data: result,
+        data: orderedResult,
     });
 }));
 const getSingleRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

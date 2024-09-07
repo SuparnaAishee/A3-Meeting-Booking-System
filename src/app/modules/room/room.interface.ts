@@ -9,6 +9,7 @@ export type TRoom = {
   pricePerSlot: number;
   amenities: string[];
   isDeleted: boolean;
+  image: string;
 };
 export interface RoomModel extends Model<TRoom> {
   // myStaticMethod():number;

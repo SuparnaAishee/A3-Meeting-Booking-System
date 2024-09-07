@@ -19,9 +19,9 @@ const booking_service_1 = require("./booking.service");
 const createBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield booking_service_1.BookingServices.createBookingFromSlot(req.body);
     (0, sendResponse_1.default)(res, {
-        success: true,
         statusCode: 200,
-        message: 'Booking Created successfully',
+        success: true,
+        message: 'User bookings created successfully',
         data: result,
     });
 }));
@@ -35,13 +35,23 @@ const getAllBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 const getMyBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield booking_service_1.BookingServices.getAllBookingsFromDB();
-    (0, sendResponse_1.default)(res, {
-        success: true,
-        statusCode: 200,
-        message: 'My Booking retrieved successfully',
-        data: result,
-    });
+    const result = yield booking_service_1.BookingServices.getMyBookingsFromDB(req.user);
+    if (result.length === 0) {
+        (0, sendResponse_1.default)(res, {
+            statusCode: 404,
+            success: false,
+            message: 'No Data Found',
+            data: [],
+        });
+    }
+    else {
+        (0, sendResponse_1.default)(res, {
+            statusCode: 200,
+            success: true,
+            message: 'User bookings retrieved successfully',
+            data: result,
+        });
+    }
 }));
 const updateSingleBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;

@@ -18,11 +18,19 @@ const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const auth_service_1 = require("./auth.service");
 const signupUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.AuthServices.signupUser(req.body);
+    const orderedResult = {
+        _id: result._id,
+        name: result.name,
+        email: result.email,
+        phone: result.phone,
+        role: result.role,
+        address: result.address,
+    };
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,
         message: 'User is Registered Sucessfully',
-        data: result,
+        data: orderedResult,
     });
 }));
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

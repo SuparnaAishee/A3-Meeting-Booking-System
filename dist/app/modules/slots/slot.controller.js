@@ -17,7 +17,7 @@ const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const slot_service_1 = require("./slot.service");
 const createSlot = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield slot_service_1.SlotServices.createSlotIntoDB(req.body, req);
+    const result = yield slot_service_1.SlotServices.createSlotIntoDB(req.body);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,
@@ -26,13 +26,23 @@ const createSlot = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const avaiableSlot = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield slot_service_1.SlotServices.getAvaiableSlotFromDB(req.body);
-    (0, sendResponse_1.default)(res, {
-        success: true,
-        statusCode: 200,
-        message: 'Retrived avaiable slots successfully',
-        data: result,
-    });
+    const result = yield slot_service_1.SlotServices.getAvaiableSlotFromDB(req.query);
+    if (result.length === 0) {
+        (0, sendResponse_1.default)(res, {
+            statusCode: 404,
+            success: false,
+            message: 'No Data Found',
+            data: [],
+        });
+    }
+    else {
+        (0, sendResponse_1.default)(res, {
+            statusCode: 200,
+            success: true,
+            message: 'Available slots retrieved successfully',
+            data: result,
+        });
+    }
 }));
 exports.slotControllers = {
     createSlot,
