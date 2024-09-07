@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import config from '../config';
+// import config from '../config';
 import AppError from '../errors/AppError';
 import { TErrorSources } from '../interface/errors';
 import { ZodError } from 'zod';
@@ -69,7 +69,8 @@ const globalErrorHandler = (
     message,
     errorSources,
     err,
-    stack: config.node_env === 'development' ? err?.stack : null,
+    // stack: config.node_env === 'development' ? err?.stack : null,
+    stack: err.stack,
   });
 };
 

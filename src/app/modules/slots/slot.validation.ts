@@ -1,68 +1,111 @@
 import { z } from 'zod';
-
-export const slotValidationSchema = z
-  .object({
-    room: z.string().nonempty({ message: 'Room ID must be provided' }),
-    date: z
-      .string()
-      .refine((date) => !isNaN(Date.parse(date)), {
-        message: 'Invalid date format',
-      }),
-    startTime: z
-      .string()
-      .regex(/^\d{2}:\d{2}$/, {
-        message: 'Invalid start time format, should be HH:MM',
-      }).nonempty('Start Time have to be given'),
-    endTime: z
-      .string()
-      .regex(/^\d{2}:\d{2}$/, {
-        message: 'Invalid end time format, should be HH:MM',
-      }).nonempty('End Time have to be given'),
-    isBooked: z.boolean().optional(),
-  })
-  .refine(
-    (data) => {
-      const start = new Date(`1999-01-01T${data.startTime}:00`);
-      const end = new Date(`1999-01-01T${data.endTime}:00`);
-      return start < end;
-    },
-    {
-      message: 'Start time must be before end time',
-      path: ['endTime'],
-    },
-  );
-
-  export const updateSlotValidationSchema = z
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+export const slotValidationSchema = z.object({
+  body: z
     .object({
-      room: z.string().nonempty({ message: 'Room ID must be provided' }),
-      date: z.string().refine((date) => !isNaN(Date.parse(date)), {
-        message: 'Invalid date format',
-      }),
-      startTime: z
+      room: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid room ID format'),
+      date: z
         .string()
-        .regex(/^\d{2}:\d{2}$/, {
-          message: 'Invalid start time format, should be HH:MM',
-        })
-        .nonempty('Start Time have to be given'),
-      endTime: z
-        .string()
-        .regex(/^\d{2}:\d{2}$/, {
-          message: 'Invalid end time format, should be HH:MM',
-        })
-        .nonempty('End Time have to be given'),
-      isBooked: z.boolean().optional(),
+        .refine(
+          (val) => dateRegex.test(val) && !isNaN(new Date(val).getTime()),
+          {
+            message: 'Invalid date format, please use YYYY-MM-DD',
+          },
+        ),
+      startTime: z.string().refine(
+        (val) => {
+          return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+        },
+        {
+          message: 'Invalid start time format',
+        },
+      ),
+      endTime: z.string().refine(
+        (val) => {
+          return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+        },
+        {
+          message: 'Invalid end time format',
+        },
+      ),
     })
     .refine(
       (data) => {
-        const start = new Date(`1999-01-01T${data.startTime}:00`);
-        const end = new Date(`1999-01-01T${data.endTime}:00`);
-        return start < end;
+        console.log(data, data.startTime.split(':'), 0);
+        const [startHour, startMinute] = data.startTime.split(':').map(Number);
+        const [endHour, endMinute] = data.endTime.split(':').map(Number);
+        return (
+          startHour < endHour ||
+          (startHour === endHour && startMinute < endMinute)
+        );
       },
       {
         message: 'Start time must be before end time',
-        path: ['endTime'],
+        path: ['startTime'],
       },
-    );
+    ),
+});
+  export const updateSlotValidationSchema = z.object({
+    body: z
+      .object({
+        room: z
+          .string()
+          .regex(/^[0-9a-fA-F]{24}$/, 'Invalid room ID format')
+          .optional(),
+        date: z
+          .string()
+          .refine(
+            (val) => dateRegex.test(val) && !isNaN(new Date(val).getTime()),
+            {
+              message: 'Invalid date format, please use YYYY-MM-DD',
+            },
+          )
+          .optional(),
+        startTime: z
+          .string()
+          .refine(
+            (val) => {
+              return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+            },
+            {
+              message: 'Invalid start time format',
+            },
+          )
+          .optional(),
+        endTime: z
+          .string()
+          .refine(
+            (val) => {
+              return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+            },
+            {
+              message: 'Invalid end time format',
+            },
+          )
+          .optional(),
+      })
+      .refine(
+        (data) => {
+          // @ts-expect-error: startTime might be undefined
+
+          const [startHour, startMinute] = data.startTime
+            .split(':')
+            .map(Number);
+          // @ts-expect-error: end might be undefined
+
+          const [endHour, endMinute] = data.endTime.split(':').map(Number);
+          return (
+            startHour < endHour ||
+            (startHour === endHour && startMinute < endMinute)
+          );
+        },
+        {
+          message: 'Start time must be before end time',
+          path: ['startTime'],
+        },
+      ),
+  });
+
 export const slotValidations = {
   slotValidationSchema,updateSlotValidationSchema
 };

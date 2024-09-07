@@ -143,8 +143,14 @@ const deleteSingleSlotFromDB = async (id: string) => {
   return result;
 };
 
+const getSingleSlotFromDB = async (id: string) => {
+  const result = await Slot.findById(id);
+  return result;
+};
+
+
 
 export const SlotServices = {
   createSlotIntoDB,
-  getAvaiableSlotFromDB,getAllSlotFromDB,updateSingleSlotFromDB,deleteSingleSlotFromDB
+  getAvaiableSlotFromDB,getAllSlotFromDB,updateSingleSlotFromDB,deleteSingleSlotFromDB,getSingleSlotFromDB
 };

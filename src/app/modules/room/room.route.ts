@@ -15,10 +15,10 @@ router.post(
 
 router.get(
   '/:id',
-  auth(USER_ROLE.admin, USER_ROLE.user),
+
   RoomControllers.getSingleRoom,
 );
-router.get('/', auth(USER_ROLE.admin,USER_ROLE.user), RoomControllers.getAllRooms);
+router.get('/', RoomControllers.getAllRooms);
 // router.put('/:id', auth(USER_ROLE.admin), RoomControllers.updateRoom);
 router.put(
   '/:id',

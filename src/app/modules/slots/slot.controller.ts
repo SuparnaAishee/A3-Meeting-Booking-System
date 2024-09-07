@@ -81,7 +81,32 @@ const deleteSingleSlot = catchAsync(async (req, res) => {
   });
 });
 
+const getSingleSlot = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+
+
+  const result = await SlotServices.getSingleSlotFromDB(id);
+
+  if (!result) {
+    sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: 'No Data Found',
+      data: [],
+    });
+  } else {
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'slot retrieved successfully',
+      data: result,
+    });
+  }
+});
+
+
 export const slotControllers = {
   createSlot,
-  avaiableSlot,getAllSlot,updateSingleslot,deleteSingleSlot
+  avaiableSlot,getAllSlot,updateSingleslot,deleteSingleSlot,getSingleSlot
 };
