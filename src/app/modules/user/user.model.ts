@@ -18,7 +18,6 @@ const userSchema = new Schema<TUser, UserModel>(
     phone: {
       type: Number,
       required: true,
-     
     },
     address: {
       type: String,
@@ -27,7 +26,12 @@ const userSchema = new Schema<TUser, UserModel>(
     role: {
       type: String,
       enum: ['admin', 'user'],
+      default: 'user',
       required: true,
+    },
+    isFirstBooking: {
+      type: Boolean,
+      default: false, // Set to false by default
     },
   },
   { versionKey: false },

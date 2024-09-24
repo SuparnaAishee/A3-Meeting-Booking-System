@@ -19,6 +19,10 @@ router.post(
   AuthControllers.loginUser,
 );
 
+router.get(
+  '/:email',
 
+  userControllers.getSingleUserByEmail,
+);
 
 export const UserRoutes = router;

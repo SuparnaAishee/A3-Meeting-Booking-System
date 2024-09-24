@@ -8,7 +8,9 @@ export type TBooking = {
   user: Schema.Types.ObjectId;
   date: string;
   totalAmount: number;
-  isConfirmed:BookingStatus;
+  isConfirmed: BookingStatus;
   isDeleted: boolean;
- 
+  promoCode?: string;
+  discountAmount?: number;
+  transactionId?: string;
 };

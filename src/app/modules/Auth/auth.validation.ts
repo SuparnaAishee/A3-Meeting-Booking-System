@@ -11,8 +11,11 @@ const loginValidationSchema = z.object({
     .email({ message: 'Invalid email format.' }),
   password: z.string({ required_error: 'Password is required.' }),
 });
+const refreshTokenValidationSchema = z.object({
+  refreshToken: z.string({required_error:'Refresh token is required'}),
+});
 
 export const AuthValidation = {
   loginValidationSchema,
-  signupValidationSchema,
+  signupValidationSchema,refreshTokenValidationSchema
 };

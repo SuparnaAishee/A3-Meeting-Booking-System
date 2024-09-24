@@ -7,7 +7,8 @@ export const userValidationSchema = z.object({
   phone: z.string(),
 
   address: z.string(),
-  role: z.enum(['admin', 'user']),
+ 
+  isFirstBooking: z.boolean().optional(), // Optional field
 });
 
 export const UserValidations = {

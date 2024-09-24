@@ -10,6 +10,8 @@ import { USER_ROLE } from '../modules/user/user.constant';
 import { BookingControllers } from '../modules/booking/booking.controller';
 import { UserRoutes } from '../modules/user/user.route';
 
+import { paymentRoutes } from '../modules/payment/payment.route';
+
 const router = Router();
 
 const moduleRoutes = [
@@ -34,12 +36,17 @@ const moduleRoutes = [
     path: '/bookings',
     route: BookingRouters,
   },
+  {
+    path:"/payment",
+    route:paymentRoutes
+  }
 ];
 router.get(
   '/my-bookings',
   auth(USER_ROLE.user),
   BookingControllers.getMyBookings,
 );
+
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 export default router;

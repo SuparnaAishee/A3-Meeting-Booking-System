@@ -9,6 +9,7 @@ export interface TUser {
   phone: number;
   address: string;
   role: 'admin' | 'user';
+  isFirstBooking?: boolean;
 }
 export type TUserRole = keyof typeof USER_ROLE;
 

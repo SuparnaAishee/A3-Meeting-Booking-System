@@ -5,19 +5,28 @@ import { slotControllers } from './slot.controller';
 import auth from '../../middlewares/auth';
 import { USER_ROLE } from '../user/user.constant';
 import validateRequest from '../../middlewares/validateRequest';
-import { slotValidationSchema, updateSlotValidationSchema } from './slot.validation';
+import { slotValidationSchema } from './slot.validation';
+
+// import validateRequest from '../../middlewares/validateRequest';
+// import { slotValidationSchema, updateSlotValidationSchema } from './slot.validation';
 
 const router = express.Router();
 
-router.post('/', auth(USER_ROLE.admin),validateRequest(slotValidationSchema),slotControllers.createSlot);
-router.get('/',auth(USER_ROLE.admin),slotControllers.getAllSlot );
-router.get('/:id', auth(USER_ROLE.admin), slotControllers.getSingleSlot);
-router.get(
-  '/availability',auth(USER_ROLE.admin, USER_ROLE.user),
- 
-  slotControllers.avaiableSlot,
-);
-router.put('/:id',auth(USER_ROLE.admin),validateRequest(updateSlotValidationSchema),slotControllers.updateSingleslot);
+router.post(
+  '/',
 
-router.delete('/:id', auth(USER_ROLE.admin), slotControllers.deleteSingleSlot);
+  slotControllers.createSlot,
+);//auth(USER_ROLE.admin),
+router.get(
+  '/availability',
+ 
+
+  slotControllers.getAvailableSlots,
+);// 
+router.get('/',slotControllers.getAllSlot );//,auth(USER_ROLE.admin)
+router.get('/:id', auth(USER_ROLE.admin), slotControllers.getSingleSlot);
+
+router.put('/:id',slotControllers.updateSingleslot);//validateRequest(updateSlotValidationSchema),//auth(USER_ROLE.admin),
+
+router.delete('/:id', slotControllers.deleteSingleSlot);// auth(USER_ROLE.admin),
 export const SlotRouters = router;
